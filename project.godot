@@ -12,7 +12,7 @@ config_version=5
 
 config/name="PratfallLocalizationMod"
 run/main_scene="uid://dlxcxhepmke03"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [dotnet]

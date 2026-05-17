@@ -1,3 +1,8 @@
 [gd_scene format=3 uid="uid://dlxcxhepmke03"]
 
+[ext_resource type="Script" path="res://PratfallLocalizationMod/scripts/LanguageChanger.cs" id="1_y3pvs"]
+
 [node name="Root" type="Node" unique_id=824433880]
+
+[node name="LanguageChanger" type="Node" parent="." unique_id=1266796177]
+script = ExtResource("1_y3pvs")
