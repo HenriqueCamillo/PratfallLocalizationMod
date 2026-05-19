@@ -10,20 +10,41 @@ public static class LocalizationManager
 	private static List<string> _customLocales = new();
 	private static int _currentLocaleIndex = -1;
 	private static bool _isInitialized;
-	public static bool IsCustomLanguageActive;
-	public static bool HasJustSetLanguage;
 	private static string _lastSelectedLocale;
+	public static bool HasJustSetLanguage;
+
+	public static bool _isCustomLanguageActive;
+	public static bool IsCustomLanguageActive
+	{
+		get => _isCustomLanguageActive;
+		set
+		{
+			_isCustomLanguageActive = value;
+			if (Config.Data.AutoLoadCustomLocale == _isCustomLanguageActive)
+				return;
+
+			Config.Data.AutoLoadCustomLocale = _isCustomLanguageActive;
+			Config.Save();
+		}
+	}
 
 	public static void Init()
 	{
 		if (!_isInitialized)
 		{
+			Config.Load();
 			CreateLocalizationsFromCSV();
 			_isInitialized = true;
 		}
   
   		UpdateLastSelectedLocale();
-		SetLanguageToCustomLocale(0);
+		TrySetInitialLocale();
+	}
+
+	public static void TrySetInitialLocale()
+	{
+		if (Config.Data.AutoLoadCustomLocale)
+			SetLanguageToCustomLocale(Config.Data.SelectedCustomLocale);
 	}
 
 	private static void CreateLocalizationsFromCSV()
@@ -77,7 +98,6 @@ public static class LocalizationManager
 					}
 				}
 			}
-
 		}
 
 		if (newTranslationsByIndex.Count == 0)
@@ -106,19 +126,33 @@ public static class LocalizationManager
 
 		_currentLocaleIndex = localeIndex;
 		string locale = _customLocales[_currentLocaleIndex];
+		SetLanguageToCustomLocale(locale);
+	}
 
+	public static void SetLanguageToCustomLocale(string locale)
+	{
+		if (!_customLocales.Contains(locale))
+		{
+			ModUtils.Print($"Trying to set unavailable custom locale '{locale}'");
+			return;
+		}
+
+		SetLocale(locale);
+		Config.Data.SelectedCustomLocale = locale;
+		IsCustomLanguageActive = true;
+	}
+
+	private static void SetLocale(string locale)
+	{
 		ModUtils.Print($"Setting language to '{locale}'");
 		HasJustSetLanguage = true;
 		TranslationServer.SetLocale(locale);
-
-		IsCustomLanguageActive = true;
 	}
 	
 	public static void ResetToLastSelectedLocale()
 	{
-		HasJustSetLanguage = true;
-		TranslationServer.SetLocale(_lastSelectedLocale);
-		IsCustomLanguageActive = false;
+		SetLocale(_lastSelectedLocale);
+		_isCustomLanguageActive = false;
 	}
 
 	public static void UpdateLastSelectedLocale()

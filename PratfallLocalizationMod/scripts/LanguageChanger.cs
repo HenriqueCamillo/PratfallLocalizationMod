@@ -4,6 +4,7 @@ public partial class LanguageChanger : Node
 {
 	private const int CHANGES_TO_SWITCH_TO_CUSTOM = 3;
 	private static int _languageChanges;
+	private static bool _reapplyCustomLanguage = true; // The game sets the langauge after the mod
 
 	public override void _Notification(int what)
 	{
@@ -13,6 +14,12 @@ public partial class LanguageChanger : Node
 			{
 				LocalizationManager.HasJustSetLanguage = false;
 				return;
+			}
+
+			if (_reapplyCustomLanguage)
+			{
+				LocalizationManager.TrySetInitialLocale();
+				_reapplyCustomLanguage = false;
 			}
 
 			LocalizationManager.IsCustomLanguageActive = false;
