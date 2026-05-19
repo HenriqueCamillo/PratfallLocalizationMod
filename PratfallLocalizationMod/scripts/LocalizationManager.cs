@@ -10,6 +10,7 @@ public static class LocalizationManager
 	private static List<string> _customLocales = new();
 	private static int _currentLocaleIndex = -1;
 	private static bool _isInitialized;
+	public static bool IsCustomLanguageActive;
 
 	public static void Init()
 	{
@@ -98,13 +99,14 @@ public static class LocalizationManager
 
 		localeIndex %= _customLocales.Count;
 		localeIndex = Mathf.Clamp(localeIndex, 0, _customLocales.Count - 1);
-		if (localeIndex == _currentLocaleIndex)
+		if (IsCustomLanguageActive && localeIndex == _currentLocaleIndex)
 			return;
 
 		_currentLocaleIndex = localeIndex;
 		string locale = _customLocales[_currentLocaleIndex];
 		TranslationServer.SetLocale(locale);
 
+		IsCustomLanguageActive = true;
 		ModUtils.Print($"Set language to '{locale}'");
 	}
 }
