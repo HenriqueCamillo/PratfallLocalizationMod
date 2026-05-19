@@ -15,7 +15,10 @@ public static class Config
 
 		string jsonPath = CONFIG_FILE_PATH;
 		if (!File.Exists(jsonPath))
+		{
+			Save();
 			return;
+		}
 
 		string json = File.ReadAllText(jsonPath);
 		ConfigData loadedConfig = JsonSerializer.Deserialize<ConfigData>(json);

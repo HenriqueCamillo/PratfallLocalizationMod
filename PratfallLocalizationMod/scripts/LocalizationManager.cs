@@ -7,10 +7,8 @@ using Microsoft.VisualBasic.FileIO;
 public static class LocalizationManager 
 {
 	private static string LOCALIZATION_CSV_PATH => Path.Combine(ModUtils.MOD_PATH, "Localization.csv");
-	private static List<string> _customLocales = new();
-	private static int _currentLocaleIndex = -1;
+	private static HashSet<string> _customLocales = new();
 	private static bool _isInitialized;
-	private static string _lastSelectedLocale;
 	public static bool HasJustSetLanguage;
 
 	public static bool _isCustomLanguageActive;
@@ -37,14 +35,13 @@ public static class LocalizationManager
 			_isInitialized = true;
 		}
   
-  		UpdateLastSelectedLocale();
-		TrySetInitialLocale();
+		TrySetInitialLanguage();
 	}
 
-	public static void TrySetInitialLocale()
+	public static void TrySetInitialLanguage()
 	{
 		if (Config.Data.AutoLoadCustomLocale)
-			SetLanguageToCustomLocale(Config.Data.SelectedCustomLocale);
+			SetLanguage(Config.Data.SelectedCustomLocale);
 	}
 
 	private static void CreateLocalizationsFromCSV()
@@ -113,50 +110,34 @@ public static class LocalizationManager
 		}
 	}
 
-	public static void SetLanguageToNextLocale() => SetLanguageToCustomLocale(_currentLocaleIndex + 1);
-	public static void SetLanguageToCustomLocale(int localeIndex)
+	private static void SetLanguage(string locale)
 	{
-		if (_customLocales.Count == 0)
-			return;
-
-		localeIndex %= _customLocales.Count;
-		localeIndex = Mathf.Clamp(localeIndex, 0, _customLocales.Count - 1);
-		if (IsCustomLanguageActive && localeIndex == _currentLocaleIndex)
-			return;
-
-		_currentLocaleIndex = localeIndex;
-		string locale = _customLocales[_currentLocaleIndex];
-		SetLanguageToCustomLocale(locale);
-	}
-
-	public static void SetLanguageToCustomLocale(string locale)
-	{
-		if (!_customLocales.Contains(locale))
+		if (!TranslationServer.HasTranslationForLocale(locale, exact: true))
 		{
-			ModUtils.Print($"Trying to set unavailable custom locale '{locale}'");
+			ModUtils.Print($"Trying to set language to unavailable locale: '{locale}'");
 			return;
 		}
 
-		SetLocale(locale);
-		Config.Data.SelectedCustomLocale = locale;
-		IsCustomLanguageActive = true;
-	}
-
-	private static void SetLocale(string locale)
-	{
 		ModUtils.Print($"Setting language to '{locale}'");
 		HasJustSetLanguage = true;
 		TranslationServer.SetLocale(locale);
-	}
-	
-	public static void ResetToLastSelectedLocale()
-	{
-		SetLocale(_lastSelectedLocale);
-		_isCustomLanguageActive = false;
+		HandleLanguageChange();
 	}
 
-	public static void UpdateLastSelectedLocale()
+	private static bool IsCustomLocale(string locale)
 	{
-		_lastSelectedLocale = TranslationServer.GetLocale();
+		return _customLocales.Contains(locale);
+	}
+
+	public static void HandleLanguageChange()
+	{
+		string locale = TranslationServer.GetLocale();
+		IsCustomLanguageActive = IsCustomLocale(locale);
+
+		if (IsCustomLanguageActive)
+		{
+			Config.Data.SelectedCustomLocale = locale;
+			Config.Save();
+		}
 	}
 }

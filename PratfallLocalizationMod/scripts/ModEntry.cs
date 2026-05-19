@@ -14,7 +14,6 @@ public static class ModEntry
 
 	public static void ModDestroy()
 	{
-		LocalizationManager.ResetToLastSelectedLocale();
 		ModUtils.Print("Localization Mod destroyed!");
 	}
 }
