@@ -11,6 +11,8 @@ public static class LocalizationManager
 	private static int _currentLocaleIndex = -1;
 	private static bool _isInitialized;
 	public static bool IsCustomLanguageActive;
+	public static bool HasJustSetLanguage;
+	private static string _lastSelectedLocale;
 
 	public static void Init()
 	{
@@ -20,6 +22,7 @@ public static class LocalizationManager
 			_isInitialized = true;
 		}
   
+  		UpdateLastSelectedLocale();
 		SetLanguageToCustomLocale(0);
 	}
 
@@ -27,7 +30,7 @@ public static class LocalizationManager
 	{
 		HashSet<string> loadedLocales = TranslationServer.GetLoadedLocales().ToHashSet();
 
-		TextFieldParser parser = new(LOCALIZATION_CSV_PATH);
+		using TextFieldParser parser = new(LOCALIZATION_CSV_PATH);
 		parser.TextFieldType = FieldType.Delimited;
 		parser.SetDelimiters(",");
 
@@ -79,7 +82,7 @@ public static class LocalizationManager
 
 		if (newTranslationsByIndex.Count == 0)
 		{
-			ModUtils.Print("Couldn't read .csv file");
+			ModUtils.Print("Invalid .csv file");
 			return;
 		}
 
@@ -91,7 +94,6 @@ public static class LocalizationManager
 	}
 
 	public static void SetLanguageToNextLocale() => SetLanguageToCustomLocale(_currentLocaleIndex + 1);
-
 	public static void SetLanguageToCustomLocale(int localeIndex)
 	{
 		if (_customLocales.Count == 0)
@@ -104,9 +106,23 @@ public static class LocalizationManager
 
 		_currentLocaleIndex = localeIndex;
 		string locale = _customLocales[_currentLocaleIndex];
+
+		ModUtils.Print($"Setting language to '{locale}'");
+		HasJustSetLanguage = true;
 		TranslationServer.SetLocale(locale);
 
 		IsCustomLanguageActive = true;
-		ModUtils.Print($"Set language to '{locale}'");
+	}
+	
+	public static void ResetToLastSelectedLocale()
+	{
+		HasJustSetLanguage = true;
+		TranslationServer.SetLocale(_lastSelectedLocale);
+		IsCustomLanguageActive = false;
+	}
+
+	public static void UpdateLastSelectedLocale()
+	{
+		_lastSelectedLocale = TranslationServer.GetLocale();
 	}
 }
