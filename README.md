@@ -27,7 +27,7 @@ Note: Additional columns with the locales already existing in the game will be i
 You can use [this template](https://docs.google.com/spreadsheets/d/159jjgwiimEFuYmiFUlIKS75MIr6kHpIYdULLQ4FOtv0/edit?usp=sharing), it already contains the localization keys and the original translations, so you just need to add new columns for the new languages. Just keep in mind it may get outdated with game updates.
 
 ## Switching languages
-The mod already sets the game to the first custom language on startup, but it also overrides the language selector behaviour, showing a custom language every three language changes, cycling through all of them.
+Custom languages are accessible in the langauge selector in the options menu
 
 ## Extracting the localizations from the game
 If you want to extract the most recent localizations from the game yourself, you can use [Godot PCK Explorer](https://github.com/DmitriySalnikov/GodotPCKExplorer) to extract the `.po` files from the `Pratfall.pck` (located in the game's installation folder). They are located in `data/localization`. Once you have extracted a `.po` file, you can use a converter such as [csv2po](https://docs.translatehouse.org/projects/translate-toolkit/en/latest/commands/csv2po.html) to convert it to `.csv`, and then you are ready to add new languages.
