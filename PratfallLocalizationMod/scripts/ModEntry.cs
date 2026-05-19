@@ -9,6 +9,7 @@ public static class ModEntry
 	public static void ModInit()
 	{
 		ModUtils.Print("Initializing Localization Mod...");
+		ModUtils.Init();
 		LocalizationManager.Init();
 	}
 
