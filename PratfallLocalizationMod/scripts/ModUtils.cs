@@ -31,13 +31,10 @@ public static class ModUtils
 			var nameProperty = mod.GetType().GetProperty("Name");
        		string modName = nameProperty?.GetValue(mod) as string;
 
-			Print(modName);
 			if (modName == MOD_NAME)
 			{
 				var dirProperty = mod.GetType().GetProperty("Directory");
             	_modPath = dirProperty?.GetValue(mod) as string;
-				
-				Print(_modPath);
 				break;
 			}
 		}

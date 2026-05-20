@@ -1,7 +1,7 @@
 {
   "Name": "Pratfall Localization Mod",
-  "Version": "1.0.2",
-  "Description": "Mod to add custom localizations to Pratfall",
+  "Version": "1.0.3",
+  "Description": "Adds custom localizations to Pratfall.",
   "Author": "HenriqueCamillo",
   "PackageName": "PratfallLocalizationMod.pck",
   "Assembly": "PratfallLocalizationMod.dll",
