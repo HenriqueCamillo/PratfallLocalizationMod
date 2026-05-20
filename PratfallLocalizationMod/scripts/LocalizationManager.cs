@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Godot;
 using Microsoft.VisualBasic.FileIO;
 
 public static class LocalizationManager 
 {
-	private static string LOCALIZATION_CSV_PATH => Path.Combine(ModUtils.MOD_PATH, "Localization.csv");
+	private static string LOCALIZATION_FOLDER => Path.Combine(ModUtils.MOD_PATH, "Localization");
 	private static HashSet<string> _customLocales = new();
 	private static bool _isInitialized;
 	public static bool HasJustSetLanguage;
@@ -31,24 +30,25 @@ public static class LocalizationManager
 		if (!_isInitialized)
 		{
 			Config.Load();
-			CreateLocalizationsFromCSV();
+			AddTranslationsFromCSVFolder();
 			_isInitialized = true;
 		}
   
 		TrySetInitialLanguage();
 	}
 
-	public static void TrySetInitialLanguage()
+	private static void AddTranslationsFromCSVFolder()
 	{
-		if (Config.Data.AutoLoadCustomLocale)
-			SetLanguage(Config.Data.SelectedCustomLocale);
+		string[] csvFiles = Directory.GetFiles(LOCALIZATION_FOLDER, "*.csv");
+		foreach (var csv in csvFiles)
+			AddTranslationsFromCSV(csv);
 	}
 
-	private static void CreateLocalizationsFromCSV()
+	private static void AddTranslationsFromCSV(string csvPath)
 	{
-		HashSet<string> loadedLocales = TranslationServer.GetLoadedLocales().ToHashSet();
-
-		using TextFieldParser parser = new(LOCALIZATION_CSV_PATH);
+		ModUtils.Print($"Reading {Path.GetFileName(csvPath)}");
+		
+		using TextFieldParser parser = new(csvPath);
 		parser.TextFieldType = FieldType.Delimited;
 		parser.SetDelimiters(",");
 
@@ -63,9 +63,9 @@ public static class LocalizationManager
 				for (int i = 1; i < fields.Length; i++)
 				{
 					string locale = fields[i];
-					if (loadedLocales.Contains(locale))
+					if (TranslationServer.HasTranslationForLocale(locale, exact: true))
 					{
-						ModUtils.Print($"Ignoring locale '{locale}'. It already exists.");
+						ModUtils.Print($"Locale '{locale}' already has a translation. Ignoring...");
 						continue;
 					}
 
@@ -78,10 +78,7 @@ public static class LocalizationManager
 				hasReadHeader = true;
 
 				if (newTranslationsByIndex.Count == 0)
-				{
-					ModUtils.Print("Couldn't find any new locale.");
 					return;
-				}
 			}
 			else
 			{
@@ -98,10 +95,7 @@ public static class LocalizationManager
 		}
 
 		if (newTranslationsByIndex.Count == 0)
-		{
-			ModUtils.Print("Invalid .csv file");
 			return;
-		}
 
 		foreach (var translation in newTranslationsByIndex)
 		{
@@ -110,13 +104,16 @@ public static class LocalizationManager
 		}
 	}
 
+	public static void TrySetInitialLanguage()
+	{
+		if (Config.Data.AutoLoadCustomLocale)
+			SetLanguage(Config.Data.SelectedCustomLocale);
+	}
+
 	private static void SetLanguage(string locale)
 	{
 		if (!TranslationServer.HasTranslationForLocale(locale, exact: true))
-		{
-			ModUtils.Print($"Trying to set language to unavailable locale: '{locale}'");
 			return;
-		}
 
 		ModUtils.Print($"Setting language to '{locale}'");
 		HasJustSetLanguage = true;
