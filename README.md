@@ -5,7 +5,7 @@ Note: This mod by itself doesn't add any custom language, see the `Adding New La
 
 ## Installation
 ### Steam Workshop
-- Subscribing to this mod on [Steam Workshop]("https://steamcommunity.com/sharedfiles/filedetails/?id=3729364926")
+- Subscribing to this mod on [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3729364926)
 - Add new languages (see next section)
 - Enable the mod from the in-game mods menu
 
