@@ -6,9 +6,10 @@ using Microsoft.VisualBasic.FileIO;
 public static class LocalizationManager 
 {
 	private static string LOCALIZATION_FOLDER => Path.Combine(ModUtils.MOD_PATH, "Localization");
-	private static HashSet<string> _customLocales = new();
-	private static bool _isInitialized;
+	private static Dictionary<string, Translation> _customTranslationByLocale = new();
 	public static bool HasJustSetLanguage;
+	private static string _initialLocale;
+	public static string SystemLocale = "en";
 
 	public static bool _isCustomLanguageActive;
 	public static bool IsCustomLanguageActive
@@ -27,14 +28,16 @@ public static class LocalizationManager
 
 	public static void Init()
 	{
-		if (!_isInitialized)
-		{
-			Config.Load();
-			AddTranslationsFromCSVFolder();
-			_isInitialized = true;
-		}
-  
+		_initialLocale = TranslationServer.GetLocale();
+		Config.Load();
+		AddTranslationsFromCSVFolder();
 		TrySetInitialLanguage();
+	}
+
+	public static void Destroy()
+	{
+		ResetToNonCustomTranslation();
+		RemoveAddedTranslations();
 	}
 
 	private static void AddTranslationsFromCSVFolder()
@@ -100,7 +103,7 @@ public static class LocalizationManager
 		foreach (var translation in newTranslationsByIndex)
 		{
 			TranslationServer.AddTranslation(translation.Value);
-			_customLocales.Add(translation.Value.Locale);
+			_customTranslationByLocale.Add(translation.Value.Locale, translation.Value);
 		}
 	}
 
@@ -123,7 +126,7 @@ public static class LocalizationManager
 
 	private static bool IsCustomLocale(string locale)
 	{
-		return _customLocales.Contains(locale);
+		return _customTranslationByLocale.ContainsKey(locale);
 	}
 
 	public static void HandleLanguageChange()
@@ -136,5 +139,26 @@ public static class LocalizationManager
 			Config.Data.SelectedCustomLocale = locale;
 			Config.Save();
 		}
+	}
+
+	public static void RemoveAddedTranslations()
+	{
+
+		foreach (var customTranslation in _customTranslationByLocale)
+			TranslationServer.RemoveTranslation(customTranslation.Value);
+
+		_customTranslationByLocale.Clear();
+	}
+
+	private static void ResetToNonCustomTranslation()
+	{
+		string currentLocale = TranslationServer.GetLocale();
+		if (!IsCustomLocale(currentLocale))
+			return;
+
+		string resetLocale = IsCustomLocale(_initialLocale) ? SystemLocale : _initialLocale;
+		ModUtils.Print($"Resetting language to {resetLocale}");
+		HasJustSetLanguage = true;
+		TranslationServer.SetLocale(resetLocale);
 	}
 }

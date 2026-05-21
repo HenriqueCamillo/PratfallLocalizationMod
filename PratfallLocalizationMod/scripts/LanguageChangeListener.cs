@@ -16,6 +16,7 @@ public partial class LanguageChangeListener : Node
 
 			if (_reapplyCustomLanguage)
 			{
+				LocalizationManager.SystemLocale = TranslationServer.GetLocale();
 				LocalizationManager.TrySetInitialLanguage();
 				_reapplyCustomLanguage = false;
 				return;

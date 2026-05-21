@@ -31,6 +31,7 @@ public static class ModEntry
 
 	public static void ModDestroy()
 	{
+		LocalizationManager.Destroy();
 		ModUtils.Print("Localization Mod destroyed!");
 	}
 }
