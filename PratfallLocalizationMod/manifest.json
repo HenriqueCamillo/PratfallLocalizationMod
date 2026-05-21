@@ -1,7 +1,7 @@
 {
   "Name": "Pratfall Localization Mod",
   "Version": "1.0.3",
-  "Description": "Adds custom localizations to Pratfall.",
+  "Description": "Adds custom localizations to the game.\nThey are accessible via the default language selector in the options menu.\n\nDocumentation, Language Packs and Source Code available on GitHub:\nhttps://github.com/HenriqueCamillo/PratfallLocalizationMod",
   "Author": "HenriqueCamillo",
   "PackageName": "PratfallLocalizationMod.pck",
   "Assembly": "PratfallLocalizationMod.dll",

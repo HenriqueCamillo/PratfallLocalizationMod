@@ -1,4 +1,4 @@
 Pratfall Localization Mod
 
-Source code, updates and documentation on Github:
+Documentation, Language Packs and Source Code available on GitHub:
 https://github.com/HenriqueCamillo/PratfallLocalizationMod
