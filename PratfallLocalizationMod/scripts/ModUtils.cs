@@ -16,25 +16,11 @@ public static class ModUtils
 
 	private static void FetchModPath()
 	{
-		Type modManagerType = null;
-		foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+		foreach (ModManifest mod in ModManager.Mods)
 		{
-			modManagerType = assembly.GetType("ModManager");
-			if (modManagerType != null) 
-				break;
-		}
-
-		var modsProperty = modManagerType.GetProperty("Mods");
-		var modsList = modsProperty.GetValue(null) as IEnumerable;
-		foreach (var mod in modsList)
-		{
-			var nameProperty = mod.GetType().GetProperty("Name");
-       		string modName = nameProperty?.GetValue(mod) as string;
-
-			if (modName == MOD_NAME)
+			if (mod.Name == MOD_NAME)
 			{
-				var dirProperty = mod.GetType().GetProperty("Directory");
-            	_modPath = dirProperty?.GetValue(mod) as string;
+				_modPath = mod.Directory;
 				break;
 			}
 		}

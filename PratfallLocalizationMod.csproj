@@ -4,4 +4,9 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Pratfall">
+      <HintPath>F:/Games/Steam/steamapps/common/Pratfall/data_Pratfall_windows_x86_64/Pratfall.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
